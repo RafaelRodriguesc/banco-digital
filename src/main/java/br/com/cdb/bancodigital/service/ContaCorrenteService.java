@@ -21,19 +21,15 @@ import br.com.cdb.bancodigital.repository.ContaPoupancaRepository;
 @Service
 public class ContaCorrenteService {
 
+	@Autowired
 	private ContaCorrenteRepository contaCorrenteRepository;
+	@Autowired
 	private ContaPoupancaRepository contaPoupancaRepository;
+	@Autowired
 	private ClienteRepository clienteRepository;
+	@Autowired
 	private DebitoService debitoService;
 
-	@Autowired
-	public ContaCorrenteService(ContaCorrenteRepository contaCorrenteRepository, ClienteRepository clienteRepository,
-			ContaPoupancaRepository contaPoupancaRepository, DebitoService debitoService) {
-		this.contaCorrenteRepository = contaCorrenteRepository;
-		this.contaPoupancaRepository = contaPoupancaRepository;
-		this.clienteRepository = clienteRepository;
-		this.debitoService = debitoService;
-	}
 
 	public ContaCorrente saveAccount(Long clienteId, ClientePlano clientePlano, TipoConta tipoConta) {
 		Optional<Cliente> clienteOptional = clienteRepository.findById(clienteId);
@@ -170,6 +166,8 @@ public class ContaCorrenteService {
 
 		return true;
 	}
+	
+	
 
 	public void descontarTaxaManutencaoParaTodosPlanos() {
 		for (ClientePlano plano : ClientePlano.values()) {

@@ -15,14 +15,10 @@ import br.com.cdb.bancodigital.repository.DebitoRepository;
 @Service
 public class DebitoService {
 
-	private DebitoRepository debitoRepository;
-	private ContaCorrenteRepository contaCorrenteRepository;
-
 	@Autowired
-	public DebitoService(DebitoRepository debitoRepository, ContaCorrenteRepository contaCorrenteRepository) {
-		this.debitoRepository = debitoRepository;
-		this.contaCorrenteRepository = contaCorrenteRepository;
-	}
+	private DebitoRepository debitoRepository;
+	@Autowired
+	private ContaCorrenteRepository contaCorrenteRepository;
 
 	public CartaoDebito saveCartaoDebito(Long numeroDaConta) {
 		Optional<ContaCorrente> contaCorrenteOptional = contaCorrenteRepository.findByNumeroDaConta(numeroDaConta);

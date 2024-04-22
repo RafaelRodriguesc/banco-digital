@@ -10,22 +10,24 @@ import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigital.entity.Cliente;
 import br.com.cdb.bancodigital.entity.ClientePlano;
+import br.com.cdb.bancodigital.entity.ContaCorrente;
 import br.com.cdb.bancodigital.entity.ContaPoupanca;
 import br.com.cdb.bancodigital.entity.TipoConta;
 import br.com.cdb.bancodigital.repository.ClienteRepository;
+import br.com.cdb.bancodigital.repository.ContaCorrenteRepository;
 import br.com.cdb.bancodigital.repository.ContaPoupancaRepository;
 
 @Service
 public class ContaPoupancaService {
 
-	private ClienteRepository clienteRepository;
-	private ContaPoupancaRepository contaPoupancaRepository;
-
 	@Autowired
-	public ContaPoupancaService(ContaPoupancaRepository contaPoupancaRepository, ClienteRepository clienteRepository) {
-		this.contaPoupancaRepository = contaPoupancaRepository;
-		this.clienteRepository = clienteRepository;
-	}
+	private ClienteRepository clienteRepository;
+	@Autowired
+	private ContaPoupancaRepository contaPoupancaRepository;
+	@Autowired
+	private ContaCorrenteRepository contaCorrenteRepository;
+	@Autowired
+	private DebitoService debitoService;
 
 	public ContaPoupanca saveAccount(Long clienteId, ClientePlano clientePlano, TipoConta tipoConta) {
 		Optional<Cliente> clienteOptional = clienteRepository.findById(clienteId);
@@ -58,6 +60,42 @@ public class ContaPoupancaService {
 			}
 			contaPoupancaRepository.saveAll(contasPlano);
 		}
+	}
+
+	public boolean resgatarInvestimento(Long clienteId, BigDecimal valorResgate) {
+
+		Cliente cliente = clienteRepository.findById(clienteId)
+				.orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+
+		ContaPoupanca contaPoupanca = contaPoupancaRepository.findByCliente_Id(clienteId)
+				.orElseThrow(() -> new IllegalStateException("Cliente não possui uma conta poupanca associada"));
+
+		BigDecimal saldoPoupancaAtual = contaPoupanca.getSaldo();
+
+		if (saldoPoupancaAtual.compareTo(valorResgate) < 0) {
+			throw new IllegalStateException("Saldo insuficiente na conta poupanca");
+		}
+
+		if (valorResgate.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("Valor de resgate inválido!");
+		}
+
+		ContaCorrente contaCorrente = contaCorrenteRepository.findByCliente_Id(clienteId)
+				.orElseThrow(() -> new IllegalStateException("Cliente não possui uma conta corrente associada"));
+
+		BigDecimal saldoCorrenteAtual = contaCorrente.getSaldo();
+
+		BigDecimal novoSaldoCorrente = saldoCorrenteAtual.add(valorResgate);
+		BigDecimal novoSaldoPoupanca = saldoPoupancaAtual.subtract(valorResgate);
+
+		contaCorrente.setSaldo(novoSaldoCorrente);
+		contaPoupanca.setSaldo(novoSaldoPoupanca);
+
+		contaCorrenteRepository.save(contaCorrente);
+		debitoService.atualizaSaldoCartaoDebito(contaCorrente.getNumeroDaConta());
+		contaPoupancaRepository.save(contaPoupanca);
+
+		return true;
 	}
 
 	private BigDecimal calcularTaxaRendimentoMensal(BigDecimal taxaRendimentoAnual) {

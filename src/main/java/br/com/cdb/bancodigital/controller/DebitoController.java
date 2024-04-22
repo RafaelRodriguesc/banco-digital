@@ -19,13 +19,9 @@ import br.com.cdb.bancodigital.service.DebitoService;
 @RestController
 @RequestMapping("/cartao-debito")
 public class DebitoController {
-
-	private DebitoService debitoService;
-
+	
 	@Autowired
-	public DebitoController(DebitoService debitoService) {
-		this.debitoService = debitoService;
-	}
+	private DebitoService debitoService;
 
 	@PostMapping("/desbloquear")
 	public ResponseEntity<String> desbloquearCartaoDebito(@RequestBody DesbloqueiaCartaoDTO request) {

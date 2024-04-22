@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.globalvalidation;
 
+import java.io.IOException;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +61,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(IllegalStateException.class)
 	public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	}
+	
+	@ExceptionHandler(IOException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<String> handleIOException(IOException ex) {
+	    return ResponseEntity.badRequest().body(ex.getMessage());
 	}
 
 }

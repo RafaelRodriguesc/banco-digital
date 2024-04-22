@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import br.com.cdb.bancodigital.entity.Cliente;
 import br.com.cdb.bancodigital.service.ClienteService;
@@ -29,12 +31,12 @@ public class ClienteController {
 	ClienteService clienteService;
 
 	@PostMapping("/add")
-	public ResponseEntity<String> addClient(@RequestBody @Valid Cliente cliente) {
+	public ResponseEntity<String> addClient(@RequestBody @Valid Cliente cliente) throws IOException {
 		try {
-			clienteService.saveClient(cliente.getNome(), cliente.getCpf(), cliente.getEndereco(),
+			clienteService.saveClient(cliente.getNome(), cliente.getCpf(), cliente.getCep(),
 					cliente.getDataDeNascimento());
 			return new ResponseEntity<>("Cliente adicionado ao banco de dados!", HttpStatus.CREATED);
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException | ResponseStatusException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}

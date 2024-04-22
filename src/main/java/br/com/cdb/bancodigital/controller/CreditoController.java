@@ -53,7 +53,7 @@ public class CreditoController {
 	}
 
 	@PostMapping("/pagar-com-credito")
-	public ResponseEntity<String> pagarContaComDebito(@RequestBody PagamentoDTO pagamentoRequest) {
+	public ResponseEntity<String> pagarContaComCredito(@RequestBody PagamentoDTO pagamentoRequest) {
 		try {
 			creditoService.pagarContaComCredito(pagamentoRequest.getNumeroCartao(), pagamentoRequest.getSenha(),
 					pagamentoRequest.getValor());

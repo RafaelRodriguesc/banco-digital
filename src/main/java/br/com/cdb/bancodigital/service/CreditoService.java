@@ -130,7 +130,7 @@ public class CreditoService {
 			StringBuilder detalhes = new StringBuilder();
 			detalhes.append("Nome: ").append(cliente.getNome()).append("\n");
 			detalhes.append("CPF: ").append(cliente.getCpf()).append("\n");
-			detalhes.append("Endereço: ").append(cliente.getEndereco()).append("\n");
+			detalhes.append("Endereço: ").append(cliente.getEnderecoCompleto()).append("\n");
 			detalhes.append("Número do cartão: ").append(cartaoCredito.getNumeroCartao()).append("\n");
 			detalhes.append("Tipo de conta: ").append(contaCorrente.getTipoConta()).append("\n");
 
